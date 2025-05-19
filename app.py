@@ -2,6 +2,8 @@ import streamlit as st
 import vertexai
 from vertexai import agent_engines
 import uuid # For generating unique user IDs
+import json # Added for parsing service account JSON
+from google.oauth2 import service_account # Added for creating credentials object
 
 # --- 1. Configuration Loading (from st.secrets) ---
 try:
@@ -16,12 +18,42 @@ except KeyError as e:
 # --- 2. Vertex AI Initialization & Agent Retrieval (Cached) ---
 @st.cache_resource # Cache the resource so it's not reloaded on every script run
 def get_financial_agent():
-    print("Attempting to initialize get_financial_agent...") # For debug
+    print("Attempting to initialize get_financial_agent...")
+    
+    creds = None
+    gcp_creds_json_str = None 
+    
+    try:
+        # Try to get the gcp section, and then the service_account_credentials_json from it
+        gcp_secrets = st.secrets.get("gcp", {})
+        gcp_creds_json_str = gcp_secrets.get("service_account_credentials_json")
+        
+        if gcp_creds_json_str:
+            print("Found gcp.service_account_credentials_json in secrets. Attempting to load.")
+            creds_info = json.loads(gcp_creds_json_str)
+            creds = service_account.Credentials.from_service_account_info(creds_info)
+            print("Successfully loaded service account credentials from secrets.")
+        else:
+            print("gcp.service_account_credentials_json not found in st.secrets. Using default credentials (e.g., for local development or GCE environment).")
+    except KeyError:
+        # This specific KeyError might not be hit due to .get with default, but kept for safety
+        print("gcp.service_account_credentials_json not found in st.secrets (KeyError). Using default credentials.")
+    except json.JSONDecodeError as e:
+        print(f"Error decoding service_account_credentials_json: {e}. Using default credentials.")
+        st.warning(f"Failed to parse service account JSON from secrets: {e}. Ensure it's a valid JSON string. Falling back to default credentials.")
+    except Exception as e: # Catch other potential errors from google.oauth2.service_account
+        print(f"Error loading service account credentials from secrets: {e}. Using default credentials.")
+        st.warning(f"Could not load service account from JSON secret: {e}. Falling back to default credentials.")
+
     try:
         print(f"Using PROJECT_ID: {PROJECT_ID}, LOCATION: {LOCATION}, STAGING_BUCKET: gs://{STAGING_BUCKET_NAME}")
-        print("Attempting vertexai.init()...") # For debug
-        vertexai.init(project=PROJECT_ID, location=LOCATION, staging_bucket=f"gs://{STAGING_BUCKET_NAME}")
-        print("vertexai.init() successful.") # For debug
+        if creds:
+            print("Attempting vertexai.init() with explicit credentials loaded from secrets...")
+            vertexai.init(project=PROJECT_ID, location=LOCATION, staging_bucket=f"gs://{STAGING_BUCKET_NAME}", credentials=creds)
+        else:
+            print("Attempting vertexai.init() with default/ambient credentials...")
+            vertexai.init(project=PROJECT_ID, location=LOCATION, staging_bucket=f"gs://{STAGING_BUCKET_NAME}")
+        print("vertexai.init() successful.")
     except Exception as e_init:
         print(f"ERROR during vertexai.init(): {e_init}") # For debug
         st.error(f"Failed during Vertex AI initialization: {e_init}")
