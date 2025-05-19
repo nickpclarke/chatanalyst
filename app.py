@@ -97,6 +97,7 @@ if "messages" not in st.session_state:
 
 # --- 4. UI Layout ---
 st.title("Chat with Your Financial Advisor Agent")
+st.markdown("*Remember for more information after each step you can always ask: 'show me the detailed result as markdown.'*")
 
 # Display existing chat messages
 for message in st.session_state.messages:
