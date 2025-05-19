@@ -16,11 +16,26 @@ except KeyError as e:
 # --- 2. Vertex AI Initialization & Agent Retrieval (Cached) ---
 @st.cache_resource # Cache the resource so it's not reloaded on every script run
 def get_financial_agent():
-    print("Initializing Vertex AI and getting agent...") # For debug
-    vertexai.init(project=PROJECT_ID, location=LOCATION, staging_bucket=f"gs://{STAGING_BUCKET_NAME}")
-    agent = agent_engines.get(AGENT_RESOURCE_ID)
-    print(f"Agent '{agent.name}' retrieved successfully.") # For debug
-    return agent
+    print("Attempting to initialize get_financial_agent...") # For debug
+    try:
+        print(f"Using PROJECT_ID: {PROJECT_ID}, LOCATION: {LOCATION}, STAGING_BUCKET: gs://{STAGING_BUCKET_NAME}")
+        print("Attempting vertexai.init()...") # For debug
+        vertexai.init(project=PROJECT_ID, location=LOCATION, staging_bucket=f"gs://{STAGING_BUCKET_NAME}")
+        print("vertexai.init() successful.") # For debug
+    except Exception as e_init:
+        print(f"ERROR during vertexai.init(): {e_init}") # For debug
+        st.error(f"Failed during Vertex AI initialization: {e_init}")
+        raise # Re-raise the exception to stop execution if init fails
+
+    try:
+        print(f"Attempting agent_engines.get() with AGENT_RESOURCE_ID: {AGENT_RESOURCE_ID}") # For debug
+        agent = agent_engines.get(AGENT_RESOURCE_ID)
+        print(f"Agent '{agent.name}' retrieved successfully.") # For debug
+        return agent
+    except Exception as e_get_agent:
+        print(f"ERROR during agent_engines.get(): {e_get_agent}") # For debug
+        st.error(f"Failed to get agent: {e_get_agent}")
+        raise # Re-raise the exception
 
 try:
     agent = get_financial_agent()
