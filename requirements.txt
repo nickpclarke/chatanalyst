@@ -1,2 +1,5 @@
 streamlit
+vertexai
+google-auth
+markdown
 google-cloud-aiplatform[agent_engines]>=1.91.0 

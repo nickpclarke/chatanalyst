@@ -4,6 +4,7 @@ from vertexai import agent_engines
 import uuid # For generating unique user IDs
 import json # Added for parsing service account JSON
 from google.oauth2 import service_account # Added for creating credentials object
+import markdown # For converting Markdown to HTML
 
 # --- 1. Configuration Loading (from st.secrets) ---
 try:
@@ -102,7 +103,10 @@ st.markdown("*Say hello to get started. If you encounter an error, ask to try ag
 # Display existing chat messages
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
-        st.markdown(message["content"])
+        if message.get("is_html"):
+            st.markdown(message["content"], unsafe_allow_html=True)
+        else:
+            st.markdown(message["content"])
 
 # --- 5. Handle User Input and Agent Interaction ---
 if prompt := st.chat_input("Ask the financial advisor..."):
@@ -129,15 +133,17 @@ if prompt := st.chat_input("Ask the financial advisor..."):
                             text_part = part["text"]
                             full_response_parts.append(text_part)
                             # Update placeholder with accumulating text + typing indicator "▌"
-                            response_placeholder.markdown("".join(full_response_parts) + "▌")
+                            html_so_far = markdown.markdown("".join(full_response_parts) + "▌")
+                            response_placeholder.markdown(html_so_far, unsafe_allow_html=True)
             
-            final_response = "".join(full_response_parts)
-            if not final_response and not full_response_parts: # If no text parts were received at all
+            final_response_md = "".join(full_response_parts)
+            if not final_response_md and not full_response_parts: # If no text parts were received at all
                  print("No text parts received from agent stream_query.") # For debug
-                 final_response = "Sorry, I encountered an issue and couldn't get a response. Please check the logs or try again."
+                 final_response_md = "Sorry, I encountered an issue and couldn't get a response. Please check the logs or try again."
             
-            response_placeholder.markdown(final_response) # Display final response
-            st.session_state.messages.append({"role": "assistant", "content": final_response})
+            final_response_html = markdown.markdown(final_response_md)
+            response_placeholder.markdown(final_response_html, unsafe_allow_html=True) # Display final response
+            st.session_state.messages.append({"role": "assistant", "content": final_response_html, "is_html": True})
 
         except Exception as e:
             error_message = f"Error querying agent: {e}"
