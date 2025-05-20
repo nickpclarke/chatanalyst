@@ -96,8 +96,8 @@ if "messages" not in st.session_state:
     st.session_state.messages = [] # Store as list of dicts: {"role": "user/assistant", "content": "..."}
 
 # --- 4. UI Layout ---
-st.title("Chat with Your Financial Advisor Agent")
-st.markdown("*Remember for more information after each step you can always ask: 'show me the detailed result as markdown.'*")
+st.title("ChatAnalyst: Report Agent")
+st.markdown("*Say hello to get started. If you encounter an error, ask to try again.*")
 
 # Display existing chat messages
 for message in st.session_state.messages:
