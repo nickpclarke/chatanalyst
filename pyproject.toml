@@ -1,0 +1,27 @@
+[tool.poetry]
+name = "adk-streamlit"
+version = "0.1.0"
+description = "ChatAnalyst: A Streamlit app using Google Cloud Vertex AI Agent Development Kit"
+authors = ["Nicky <your-email@example.com>"]
+readme = "README.md"
+packages = [{include = "adk_streamlit"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+streamlit = "^1.29.0"
+vertexai = "^1.38.0"
+google-auth = "^2.24.0"
+markdown = "^3.5.1"
+google-cloud-aiplatform = {extras = ["agent_engines"], version = "^1.91.0"}
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.4.3"
+black = "^23.11.0"
+flake8 = "^6.1.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+start = "streamlit run app.py"

@@ -11,6 +11,11 @@ ENV/
 env.bak/
 venv.bak/
 
+# Poetry
+poetry.lock.bak
+dist/
+*.egg-info/
+
 # Streamlit
 .streamlit/secrets.toml
 

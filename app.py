@@ -132,6 +132,8 @@ if prompt := st.chat_input("Ask the financial advisor..."):
                             response_placeholder.markdown("".join(full_response_parts) + "▌")
             
             final_response = "".join(full_response_parts)
+            # Escape dollar signs for proper display
+            final_response = final_response.replace("$", "\\$")
             if not final_response and not full_response_parts: # If no text parts were received at all
                  print("No text parts received from agent stream_query.") # For debug
                  final_response = "Sorry, I encountered an issue and couldn't get a response. Please check the logs or try again."
