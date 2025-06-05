@@ -17,8 +17,8 @@ except KeyError as e:
 
 # --- 2. Vertex AI Initialization & Agent Retrieval (Cached) ---
 @st.cache_resource # Cache the resource so it's not reloaded on every script run
-def get_financial_agent():
-    print("Attempting to initialize get_financial_agent...")
+def get_agent():
+    print("Attempting to initialize get_agent...")
     
     creds = None
     gcp_creds_json_str = None 
@@ -70,7 +70,7 @@ def get_financial_agent():
         raise # Re-raise the exception
 
 try:
-    agent = get_financial_agent()
+    agent = get_agent()
 except Exception as e:
     st.error(f"Failed to initialize Vertex AI or get agent: {e}")
     st.stop()
@@ -96,8 +96,8 @@ if "messages" not in st.session_state:
     st.session_state.messages = [] # Store as list of dicts: {"role": "user/assistant", "content": "..."}
 
 # --- 4. UI Layout ---
-st.title("ChatAnalyst: Report Agent")
-st.markdown("*Say hello to get started. If you encounter an error, ask to try again.*")
+st.title("Debate Team")
+st.markdown("*Say hello or enter a topic to get started.*")
 
 # Display existing chat messages
 for message in st.session_state.messages:
