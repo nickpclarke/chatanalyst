@@ -97,7 +97,7 @@ if "messages" not in st.session_state:
 
 # --- 4. UI Layout ---
 st.title("Debate Team")
-st.markdown("*Say hello or enter a topic to get started.*")
+st.markdown("*Say hello to get started.*")
 
 # Display existing chat messages
 for message in st.session_state.messages:
