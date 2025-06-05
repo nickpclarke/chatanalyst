@@ -129,14 +129,14 @@ if prompt := st.chat_input("Start the debate..."):
                             text_part = part["text"]
                             full_response_parts.append(text_part)
                             # Update placeholder with accumulating text + typing indicator "▌"
-                            response_placeholder.markdown("".join(full_response_parts) + "▌")
+                            response_placeholder.markdown("".join(full_response_parts) + "▌", unsafe_allow_html=True)
             
             final_response = "".join(full_response_parts)
             if not final_response and not full_response_parts: # If no text parts were received at all
                  print("No text parts received from agent stream_query.") # For debug
                  final_response = "Sorry, I encountered an issue and couldn't get a response. Please check the logs or try again."
             
-            response_placeholder.markdown(final_response) # Display final response
+            response_placeholder.markdown(final_response, unsafe_allow_html=True) # Display final response
             st.session_state.messages.append({"role": "assistant", "content": final_response})
 
         except Exception as e:
