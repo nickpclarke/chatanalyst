@@ -105,7 +105,7 @@ for message in st.session_state.messages:
         st.markdown(message["content"])
 
 # --- 5. Handle User Input and Agent Interaction ---
-if prompt := st.chat_input("Ask the financial advisor..."):
+if prompt := st.chat_input("Start the debate..."):
     # Add user message to chat history and display it
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
